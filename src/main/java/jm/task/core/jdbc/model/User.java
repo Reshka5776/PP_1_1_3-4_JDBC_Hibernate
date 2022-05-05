@@ -1,22 +1,26 @@
 package jm.task.core.jdbc.model;
 
+import org.hibernate.boot.model.relational.Sequence;
+
+import javax.lang.model.element.Name;
 import javax.persistence.*;
 
-//@Entity
-@Table
+@Entity
+@Table(name = "USERS")
 public class User {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private Long id;
 
-    @Column
+    @Column(name = "firstName")
     private String name;
 
-    @Column
+    @Column(name = "lastName")
     private String lastName;
 
-    @Column
+    @Column(name = "age")
     private Byte age;
 
     public User() {
