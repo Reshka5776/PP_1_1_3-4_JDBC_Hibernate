@@ -1,8 +1,5 @@
 package jm.task.core.jdbc.model;
 
-import org.hibernate.boot.model.relational.Sequence;
-
-import javax.lang.model.element.Name;
 import javax.persistence.*;
 
 @Entity

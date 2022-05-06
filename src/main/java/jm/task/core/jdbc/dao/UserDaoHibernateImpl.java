@@ -5,10 +5,12 @@ import jm.task.core.jdbc.util.Util;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
+
 import java.util.List;
 
 public class UserDaoHibernateImpl implements UserDao {
     Transaction transaction = null;
+
     public UserDaoHibernateImpl() {
 
     }
@@ -16,12 +18,12 @@ public class UserDaoHibernateImpl implements UserDao {
 
     @Override
     public void createUsersTable() {
-        openSessions(sqlCreateTable);
+        openSessions("CREATE TABLE IF NOT EXISTS USERS (id BIGINT PRIMARY KEY NOT NULL AUTO_INCREMENT, firstName VARCHAR(45), lastName VARCHAR(45), age TINYINT);");
     }
 
     @Override
     public void dropUsersTable() {
-        openSessions(sqlDropTable);
+        openSessions("DROP TABLE IF EXISTS USERS");
 
     }
 
@@ -55,23 +57,26 @@ public class UserDaoHibernateImpl implements UserDao {
     public List<User> getAllUsers() {
         try (Session session = Util.getSessionFactory().openSession()) {
             transaction = session.beginTransaction();
+            transaction.commit();
             return session.createQuery("from User").list();
         } catch (HibernateException hibernateException) {
             hibernateException.printStackTrace();
+            assert transaction != null;
+            transaction.rollback();
             return null;
         }
     }
 
     @Override
     public void cleanUsersTable() {
-        openSessions(sqlCleanTable);
+        openSessions("TRUNCATE TABLE USERS");
 
     }
 
-    private void openSessions(String sqlCleanTable) {
+    private void openSessions(String sqlString) {
         try (Session session = Util.getSessionFactory().openSession()) {
             transaction = session.beginTransaction();
-            session.createSQLQuery(sqlCleanTable).addEntity(User.class).executeUpdate();
+            session.createSQLQuery(sqlString).addEntity(User.class).executeUpdate();
             transaction.commit();
         } catch (HibernateException hibernateException) {
             hibernateException.printStackTrace();
